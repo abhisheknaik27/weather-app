@@ -7,6 +7,7 @@ import rain from '../assets/rain.png';
 import snowfall from '../assets/snowfall.png';
 import sun from '../assets/sun.png';
 import night from '../assets/night.png';
+import smog from '../assets/smog.png';
 import { WiHumidity } from "react-icons/wi";
 import { PiWindFill } from "react-icons/pi";
 
@@ -26,7 +27,7 @@ const Weather = () => {
     "10d": drizzle,
     "11d": rain,
     "13d": snowfall,
-    "50d": snowfall
+    "50d": smog
   }
 
   const search = async(city) => {
@@ -39,8 +40,11 @@ const Weather = () => {
 
         const response = await fetch(url);
         const data = await response.json();
-        console.log(data);
 
+        if(!response.ok){
+          alert(data.message);
+        }
+        
         const icon = allIcons[data.weather[0].icon ] || sun;
         setWeatherData({
             humidity: data.main.humidity,
@@ -54,12 +58,10 @@ const Weather = () => {
     }
   }  
 
-  useEffect(() => {
-    search();
-  }, [])
 
   return (
     <div className='weather'>
+       <h1>Weather App</h1>
        <div className='searchbar'>
         <input ref={inputRef} type="text" placeholder='Search' />
         <FaSearchLocation className='searchicon' onClick={() => search(inputRef.current.value)} />
