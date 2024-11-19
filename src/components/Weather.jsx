@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import './Weather.css';
 import { FaSearchLocation } from "react-icons/fa";
 import clouds from '../assets/clouds.png';
@@ -12,6 +12,24 @@ import { PiWindFill } from "react-icons/pi";
 
 
 const Weather = () => {
+
+  const search = async(city) => {
+    try{
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${import.meta.env.VITE_WEATHER_API}`
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        console.log(data);
+    }catch(err){
+
+    }
+  }  
+
+  useEffect(() => {
+    search('London');
+  }, [])
+
   return (
     <div className='weather'>
        <div className='searchbar'>
@@ -32,7 +50,7 @@ const Weather = () => {
                 <span>Humidity</span>
             </div>
         </div>
-        
+
         <div className="col">   
             <div className='icon'>
                 <PiWindFill />
