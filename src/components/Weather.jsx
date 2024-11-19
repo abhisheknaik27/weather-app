@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './Weather.css';
 import { FaSearchLocation } from "react-icons/fa";
 import clouds from '../assets/clouds.png';
@@ -13,7 +13,9 @@ import { PiWindFill } from "react-icons/pi";
 
 const Weather = () => {
   
-  const [weatherData, setWeatherData] = useState([]);
+  const inputRef = useRef();
+  
+  const [weatherData, setWeatherData] = useState(false);
   const allIcons = {
     "01d": sun,
     "01n": night,
@@ -28,6 +30,10 @@ const Weather = () => {
   }
 
   const search = async(city) => {
+    if(city === ""){
+        alert("Enter City Name");
+        return;
+    }
     try{
         const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${import.meta.env.VITE_WEATHER_API}`
 
@@ -44,20 +50,25 @@ const Weather = () => {
             icon: icon
         })
     }catch(err){
-
+        setWeatherData(false);
     }
   }  
 
   useEffect(() => {
-    search('London');
+    search();
   }, [])
 
   return (
     <div className='weather'>
        <div className='searchbar'>
-        <input type="text" placeholder='Search' />
-        <FaSearchLocation className='searchicon' />
+        <input ref={inputRef} type="text" placeholder='Search' />
+        <FaSearchLocation className='searchicon' onClick={() => search(inputRef.current.value)} />
        </div>
+
+        {weatherData ? <>
+        
+       
+
        <img src={weatherData.icon} className='weather-icon' alt="" />
        <p className='temperature'>{weatherData.temp}°C</p>
        <p className='location'>{weatherData.location}</p>
@@ -83,6 +94,10 @@ const Weather = () => {
             </div>
         </div>
        </div>
+
+       </> :
+       <> </>
+       }
     </div>
   )
 }
