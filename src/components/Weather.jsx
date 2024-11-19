@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import './Weather.css';
 import { FaSearchLocation } from "react-icons/fa";
 import clouds from '../assets/clouds.png';
@@ -6,21 +6,43 @@ import drizzle from '../assets/drizzle.png';
 import rain from '../assets/rain.png';
 import snowfall from '../assets/snowfall.png';
 import sun from '../assets/sun.png';
-import wind from '../assets/wind.png';
+import night from '../assets/night.png';
 import { WiHumidity } from "react-icons/wi";
 import { PiWindFill } from "react-icons/pi";
 
 
 const Weather = () => {
+  
+  const [weatherData, setWeatherData] = useState([]);
+  const allIcons = {
+    "01d": sun,
+    "01n": night,
+    "02d": clouds,
+    "03d": clouds,
+    "04d": clouds,
+    "09d": drizzle,
+    "10d": drizzle,
+    "11d": rain,
+    "13d": snowfall,
+    "50d": snowfall
+  }
 
   const search = async(city) => {
     try{
-        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${import.meta.env.VITE_WEATHER_API}`
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${import.meta.env.VITE_WEATHER_API}`
 
         const response = await fetch(url);
         const data = await response.json();
-
         console.log(data);
+
+        const icon = allIcons[data.weather[0].icon ] || sun;
+        setWeatherData({
+            humidity: data.main.humidity,
+            windSpeed: data.wind.speed,
+            temp: Math.floor(data.main.temp),
+            location: data.name,
+            icon: icon
+        })
     }catch(err){
 
     }
@@ -36,9 +58,9 @@ const Weather = () => {
         <input type="text" placeholder='Search' />
         <FaSearchLocation className='searchicon' />
        </div>
-       <img src={sun} className='weather-icon' alt="" />
-       <p className='temperature'>16°C</p>
-       <p className='location'>London</p>
+       <img src={weatherData.icon} className='weather-icon' alt="" />
+       <p className='temperature'>{weatherData.temp}°C</p>
+       <p className='location'>{weatherData.location}</p>
 
        <div className="weather-data">
         <div className="col">
@@ -46,7 +68,7 @@ const Weather = () => {
             <WiHumidity />
             </div>
             <div className='text'>
-                <p>91%</p>
+                <p>{weatherData.humidity}%</p>
                 <span>Humidity</span>
             </div>
         </div>
@@ -56,7 +78,7 @@ const Weather = () => {
                 <PiWindFill />
             </div>
             <div className='text'>
-                <p>3.6 km/h</p>
+                <p>{weatherData.windSpeed} km/h</p>
                 <span>Wind Speed</span>
             </div>
         </div>
